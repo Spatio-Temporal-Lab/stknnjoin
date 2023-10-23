@@ -1,1 +1,1 @@
-### ST-$k$NN Join
+### ST-kNN Join
