@@ -1,6 +1,5 @@
 import sys
 from configparser import ConfigParser
-import os
 
 
 class RuntimeContext(object):
@@ -15,10 +14,12 @@ class RuntimeContext(object):
         config_file = self.get_config_file_name()
         config_parser.read(config_file, encoding="UTF-8")
         sections = config_parser.sections()
-        
+
         file_section = sections[0]
+        # hdfs路径
         self.data_file_r = config_parser.get(file_section, "data_file_r")
         self.data_file_s = config_parser.get(file_section, "data_file_s")
+        # 本地路径
         self.data_file_r_local = config_parser.get(file_section, "data_file_r_local")
         self.data_file_s_local = config_parser.get(file_section, "data_file_s_local")
         self.save_dir = config_parser.get(file_section, "save_dir")
@@ -26,10 +27,11 @@ class RuntimeContext(object):
 
         base_section = sections[1]
         self.knob = config_parser.get(base_section, "knob")
-        self.jar_path = config_parser.get(base_section, "jar_path")
         self.java_path = config_parser.get(base_section, "java_path")
+        self.jar_path = config_parser.get(base_section, "jar_path")
         self.k = config_parser.get(base_section, "k")
 
+        self.data_type = self.output_dir.split('/')[1]
 
     def get_config_file_name(self):
         """ get the configuration file name according to the command line parameters

@@ -5,16 +5,14 @@ import subprocess
 
 
 class Executor:
-    def __init__(self,
-                 time_unit=30,
-                 args=None):
+    def __init__(self, args):
         # 参数
         self.args = args
         self.alpha_list = [i for i in range(50, 1000, 100)]
         self.beta_list = [i for i in range(5, 100, 10)]
         self.binNum_list = [i for i in range(20, 700, 70)]
         self.k = args.k
-        self.time_unit = time_unit
+        self.time_unit = 30
 
         # 数据路径
         self.r_file = args.data_file_r
@@ -29,7 +27,7 @@ class Executor:
         with open(f'{file}/part-00000') as f:
             line = f.readline()
             return float(line.split(':')[1].strip())
-    
+
     # hdfs读取结果
     def parse_result_hdfs(self, file):
         # out_byte = os.system(f'hdfs dfs -cat {file}/part-00000')
@@ -49,6 +47,7 @@ class Executor:
         command = fr'spark-submit --conf spark.port.maxRetries=100 --num-executors 30 --executor-cores 4 --driver-memory 5g --conf "spark.default.parallelism=400" --executor-memory 8g --master yarn --class {self.main_class} {self.jar_path} {params}'
         print(command)
         # self.args.logger.print(f'command: {command}')
+
         os.system(command)
 
     def execute_specific_knob(self):
