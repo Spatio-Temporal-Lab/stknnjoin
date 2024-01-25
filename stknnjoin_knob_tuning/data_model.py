@@ -14,7 +14,7 @@ class Data_Model:
         self.data = df
         self.set_header()
 
-        self.feature_selection()
+        # self.feature_selection()
         self.data_type_to_numeric()
 
         self.x = self.data.drop(columns='execute_time')

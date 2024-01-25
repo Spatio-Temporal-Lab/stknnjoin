@@ -31,12 +31,10 @@ def st_knn_join(x):
     logger = args_glb.logger
     logger.print(
         f'alpha: {args_glb.knobs_setting["alpha"]}, beta: {args_glb.knobs_setting["beta"]}, binNum: {args_glb.knobs_setting["binNum"]}')
-    # todo knobs设置
 
     # 可以执行n次，取平均结果
     cnt = 1
     for i in range(cnt):
-        # file_save_path = f'./results_chengdu/line/{alpha}_{beta}_{binNum}/{i}'
         file_save_path = f'{args_glb.save_dir}/{args_glb.knobs_setting["alpha"]}_{args_glb.knobs_setting["beta"]}_{args_glb.knobs_setting["binNum"]}/{i}'
         # if not os.path.exists(file_save_path):
         if os.system(f'hdfs dfs -test -e {file_save_path}/part-00000') != 0:
@@ -72,10 +70,11 @@ def st_knn_join_online(x):
     for knob in ['alpha', 'beta', 'binNum']:
         # items.append(args.knobs_setting[knob])
         features.loc[0, knob] = args_glb.knobs_setting[knob]
-    int_cols = ['nums_r', 'nums_s', 'alpha', 'beta', 'binNum']
+
+    float_cols = ['longitude_range_r', 'latitude_range_r', 'longitude_range_s', 'latitude_range_s', 'execute_time']
+    features[float_cols] = features[float_cols].apply(pd.to_numeric, downcast='integer', errors='ignore')
+    int_cols = features.columns.difference(float_cols)
     features[int_cols] = features[int_cols].apply(pd.to_numeric, downcast='integer', errors='ignore')
-    features[features.columns.difference(int_cols)] = features[features.columns.difference(int_cols)].apply(
-        pd.to_numeric, downcast='float', errors='ignore')
     result = args_glb.model.predict(features)
     logger.print(f'pred_time: {result[0]}')
     return result[0]
@@ -111,13 +110,13 @@ def search_online(args):
     init_time = time.time()
     # log文件夹下record的数据训练模型
     if data_type == 'point':
-        data_model = Data_Model(data_path='data_model/point_w_tp')
+        data_model = Data_Model(data_path='data_model/point_w_tp', data_type=data_type)
     elif data_type == 'line':
-        data_model = Data_Model(data_path='data_model/line_w_tp')
+        data_model = Data_Model(data_path='data_model/line_w_tp', data_type=data_type)
     elif data_type == 'polygon':
-        data_model = Data_Model(data_path='data_model/polygon_w_tp')
+        data_model = Data_Model(data_path='data_model/polygon_w_tp', data_type=data_type)
     elif data_type == 'lp':
-        data_model = Data_Model(data_path='data_model/lp_w_tp')
+        data_model = Data_Model(data_path='data_model/lp_w_tp', data_type=data_type)
     model = Model()
     model.train(data_model.data)
     args_glb.model = model
@@ -129,11 +128,11 @@ def search_online(args):
     features = pd.DataFrame(columns=get_cols(data_type)[:-1])
     # print(len(features.columns))
     features.loc[0] = items
-    unused_cols = ['k', 'timerange_s']
+    # unused_cols = ['k', 'timerange_s']
     # unused_cols = ['k', 'timerange_s', 'dist_r', 'dist_s']
     # unused_cols = ['k', 'timerange_s', 'area_r', 'area_s']
     # unused_cols = ['k', 'timerange_s', 'dist_r', 'area_s']
-    features.drop(unused_cols, axis='columns', inplace=True)
+    # features.drop(unused_cols, axis='columns', inplace=True)
     args_glb.features = features
     # 记录开始搜索时间
     start_time = time.time()
@@ -183,12 +182,12 @@ def gp(function=st_knn_join, n_calls=25, n_random_starts=15):
 
     with open(f'{args_glb.output_dir}/{args_glb.knob}.pkl', 'wb') as f:
         pickle.dump(res, f)
-    fig = plot_convergence(res).get_figure()
-    fig.savefig(f'{args_glb.output_dir}/output.png')
-    fig2 = plot_evaluations(res)
-    plt.savefig(f'{args_glb.output_dir}/output2.png')
-    fig3 = plot_objective(res)
-    plt.savefig(f'{args_glb.output_dir}/output3.png')
+    # fig = plot_convergence(res).get_figure()
+    # fig.savefig(f'{args_glb.output_dir}/output.png')
+    # fig2 = plot_evaluations(res)
+    # plt.savefig(f'{args_glb.output_dir}/output2.png')
+    # fig3 = plot_objective(res)
+    # plt.savefig(f'{args_glb.output_dir}/output3.png')
 
     return res
 

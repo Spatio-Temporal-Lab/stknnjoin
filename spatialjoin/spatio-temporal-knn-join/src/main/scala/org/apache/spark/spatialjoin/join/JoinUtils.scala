@@ -28,7 +28,7 @@ object JoinUtils {
     val sampleSize = if (totalNum < 1000) totalNum.toInt
     else Math.max(numPartitions * 2, Math.min(totalNum / 100, Integer.MAX_VALUE)).toInt
     val fraction = SamplingUtils.computeFractionForSampleSize(sampleSize, totalNum, withReplacement = false)
-    val samples = rdd.sample(withReplacement = false, fraction).map(transfer).collect()
+    val samples = rdd.sample(withReplacement = false, fraction, 2024).map(transfer).collect()
     (samples, fraction)
   }
 }

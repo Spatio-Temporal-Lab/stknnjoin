@@ -11,6 +11,7 @@ def initial_params():
     args.knobs_setting = {'alpha': 200, 'beta': 40, 'binNum': 200}
     args.data_type = args.output_dir.split('/')[1]
 
+
 def initial_logger():
     save_path = f'{args.output_dir}'
     if not os.path.exists(save_path):
@@ -19,10 +20,10 @@ def initial_logger():
     args.logger = logger
     args.save_path = save_path
 
+
 if __name__ == '__main__':
     initial_params()
     initial_logger()
-    search_outline(args=args)
 
     r = search_outline(args)
     # r = search_online(args)
@@ -30,5 +31,3 @@ if __name__ == '__main__':
         args.logger.print(f'{knob}\t')
     args.logger.print(str(r.fun))
 
-    # res = gp()
-    # draw(res)

@@ -118,6 +118,7 @@ def get_line(file, out):
     line_file.close()
 
 
+
 if __name__ == '__main__':
     # save_as_point_file('../data/new_york/trip_data_6.csv', '../data/point/point_r_6', '../data/point/point_s_6')
     get_line('../data/xian/xianshi_1115_1130.csv', '../data/line/line_1115_1130')
